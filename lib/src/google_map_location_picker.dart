@@ -31,6 +31,7 @@ class LocationPicker extends StatefulWidget {
     this.automaticallyAnimateToCurrentLocation,
     this.mapStylePath,
     this.appBarColor,
+    this.pinColor,
     this.searchBarBoxDecoration,
     this.hintText,
     this.resultCardConfirmIcon,
@@ -56,6 +57,7 @@ class LocationPicker extends StatefulWidget {
   final String? mapStylePath;
 
   final Color? appBarColor;
+  final Color? pinColor;
   final BoxDecoration? searchBarBoxDecoration;
   final String? hintText;
   final Widget? resultCardConfirmIcon;
@@ -104,7 +106,7 @@ class LocationPickerState extends State<LocationPicker> {
   /// is hidden so as to give more room and better experience for the
   /// autocomplete list overlay.
   void searchPlace(String place) {
-    if (context == null) return;
+    // if (context == null) return;
 
     clearOverlay();
 
@@ -115,7 +117,8 @@ class LocationPickerState extends State<LocationPicker> {
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
     Size size = renderBox.size;
 
-    final RenderBox? appBarBox = appBarKey.currentContext!.findRenderObject() as RenderBox?;
+    final RenderBox? appBarBox =
+        appBarKey.currentContext!.findRenderObject() as RenderBox?;
 
     overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
@@ -173,8 +176,10 @@ class LocationPickerState extends State<LocationPicker> {
           "${locationResult!.latLng!.longitude}";
     }
 
+    debugPrint("endpoint --> $endpoint");
+
     LocationUtils.getAppHeaders()
-        .then((headers) => http.get(Uri.parse(endpoint), headers: headers as Map<String, String>?))
+        .then((headers) => http.get(Uri.parse(endpoint), headers: headers))
         .then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
@@ -223,7 +228,7 @@ class LocationPickerState extends State<LocationPicker> {
             '&language=${widget.language}';
 
     LocationUtils.getAppHeaders()
-        .then((headers) => http.get(Uri.parse(endpoint), headers: headers as Map<String, String>?))
+        .then((headers) => http.get(Uri.parse(endpoint), headers: headers))
         .then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> location =
@@ -243,7 +248,8 @@ class LocationPickerState extends State<LocationPicker> {
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
     Size size = renderBox.size;
 
-    final RenderBox? appBarBox = appBarKey.currentContext!.findRenderObject() as RenderBox?;
+    final RenderBox? appBarBox =
+        appBarKey.currentContext!.findRenderObject() as RenderBox?;
 
     clearOverlay();
 
@@ -292,7 +298,7 @@ class LocationPickerState extends State<LocationPicker> {
               "location=${latLng.latitude},${latLng.longitude}&radius=150" +
               "&language=${widget.language}";
 
-      return http.get(Uri.parse(endpoint), headers: headers as Map<String, String>?);
+      return http.get(Uri.parse(endpoint), headers: headers);
     }).then((response) {
       if (response.statusCode == 200) {
         nearbyPlaces.clear();
@@ -330,7 +336,7 @@ class LocationPickerState extends State<LocationPicker> {
             "&language=${widget.language}";
 
     final response = await http.get(Uri.parse(endpoint),
-        headers: await (LocationUtils.getAppHeaders() as FutureOr<Map<String, String>?>));
+        headers: await LocationUtils.getAppHeaders());
 
     if (response.statusCode == 200) {
       Map<String, dynamic> responseJson = jsonDecode(response.body);
@@ -416,6 +422,7 @@ class LocationPickerState extends State<LocationPicker> {
                 widget.automaticallyAnimateToCurrentLocation,
             mapStylePath: widget.mapStylePath,
             appBarColor: widget.appBarColor,
+            pinColor: widget.pinColor,
             searchBarBoxDecoration: widget.searchBarBoxDecoration,
             hintText: widget.hintText,
             resultCardConfirmIcon: widget.resultCardConfirmIcon,
@@ -462,6 +469,7 @@ Future<LocationResult?> showLocationPicker(
   Decoration? resultCardDecoration,
   String language = 'en',
   LocationAccuracy desiredAccuracy = LocationAccuracy.best,
+  Color? pinColor,
 }) async {
   final results = await Navigator.of(context).push(
     MaterialPageRoute<dynamic>(
@@ -487,6 +495,7 @@ Future<LocationResult?> showLocationPicker(
           countries: countries,
           language: language,
           desiredAccuracy: desiredAccuracy,
+          pinColor: pinColor,
         );
       },
     ),

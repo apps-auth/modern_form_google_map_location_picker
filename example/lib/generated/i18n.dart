@@ -109,7 +109,7 @@ class GeneratedLocalizationsDelegate extends LocalizationsDelegate<S?> {
   ///
   /// Returns true if the specified locale is supported, false otherwise.
   ///
-  bool _isSupported(Locale locale, bool withCountry) {
+  bool _isSupported(Locale? locale, bool withCountry) {
     if (locale != null) {
       for (Locale supportedLocale in supportedLocales) {
         // Language must always match both locales.
@@ -134,7 +134,7 @@ class GeneratedLocalizationsDelegate extends LocalizationsDelegate<S?> {
   }
 }
 
-String? getLang(Locale l) => l == null
+String? getLang(Locale? l) => l == null
     ? null
     : l.countryCode != null && l.countryCode!.isEmpty
         ? l.languageCode

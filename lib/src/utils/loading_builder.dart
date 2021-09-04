@@ -66,7 +66,9 @@ class _FutureLoadingBuilderState<T> extends State<FutureLoadingBuilder<T?>> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.none:
+            break;
           case ConnectionState.active:
+            break;
           case ConnectionState.waiting:
             return widget.loadingIndicator ??
                 Center(child: CircularProgressIndicator());

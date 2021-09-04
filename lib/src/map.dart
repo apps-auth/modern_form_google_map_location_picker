@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +14,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import 'model/location_adress.dart';
 import 'model/location_result.dart';
 import 'utils/location_utils.dart';
 
@@ -30,6 +30,7 @@ class MapPicker extends StatefulWidget {
     this.automaticallyAnimateToCurrentLocation,
     this.mapStylePath,
     this.appBarColor,
+    this.pinColor,
     this.searchBarBoxDecoration,
     this.hintText,
     this.resultCardConfirmIcon,
@@ -53,6 +54,7 @@ class MapPicker extends StatefulWidget {
   final String? mapStylePath;
 
   final Color? appBarColor;
+  final Color? pinColor;
   final BoxDecoration? searchBarBoxDecoration;
   final String? hintText;
   final Widget? resultCardConfirmIcon;
@@ -83,6 +85,8 @@ class MapPickerState extends State<MapPicker> {
 
   String? _placeId;
 
+  LocationAdress? _locationAdress;
+
   void _onToggleMapTypePressed() {
     final MapType nextType =
         MapType.values[(_currentMapType.index + 1) % MapType.values.length];
@@ -94,8 +98,8 @@ class MapPickerState extends State<MapPicker> {
   Future<void> _initCurrentLocation() async {
     Position? currentPosition;
     try {
-      currentPosition =
-          await Geolocator.getCurrentPosition(desiredAccuracy: widget.desiredAccuracy!);
+      currentPosition = await Geolocator.getCurrentPosition(
+          desiredAccuracy: widget.desiredAccuracy!);
       d("position = $currentPosition");
 
       setState(() => _currentPosition = currentPosition);
@@ -255,6 +259,7 @@ class MapPickerState extends State<MapPicker> {
                           latLng: locationProvider.lastIdleLocation,
                           address: _address,
                           placeId: _placeId,
+                          locationAdress: _locationAdress,
                         )
                       });
                     },
@@ -280,7 +285,8 @@ class MapPickerState extends State<MapPicker> {
               headers: await (LocationUtils.getAppHeaders())))
           .body);
 
-      print("BLB data ${response}");
+      print("BLB data $response");
+      _locationAdress = LocationAdress.fromMap(response['results'][0]);
 
       return {
         "placeId": response['results'][0]['place_id'],
@@ -299,7 +305,11 @@ class MapPickerState extends State<MapPicker> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(Icons.place, size: 56),
+            Icon(
+              Icons.place,
+              size: 56,
+              color: widget.pinColor ?? Colors.black,
+            ),
             Container(
               decoration: ShapeDecoration(
                 shadows: [
@@ -363,7 +373,7 @@ class MapPickerState extends State<MapPicker> {
                 S.of(context)?.allow_access_to_the_location_services ??
                     'Allow access to the location services.'),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 child: Text(S.of(context)?.ok ?? 'Ok'),
                 onPressed: () {
                   Navigator.of(context, rootNavigator: true).pop();
@@ -397,7 +407,7 @@ class MapPickerState extends State<MapPicker> {
                     ?.allow_access_to_the_location_services_from_settings ??
                 'Allow access to the location services for this App using the device settings.'),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 child: Text(S.of(context)?.ok ?? 'Ok'),
                 onPressed: () {
                   Navigator.of(context, rootNavigator: true).pop();
@@ -412,39 +422,39 @@ class MapPickerState extends State<MapPicker> {
     );
   }
 
-  // TODO: 9/12/2020 this is no longer needed, remove in the next release
-  Future _checkGps() async {
-    if (!(await Geolocator.isLocationServiceEnabled())) {
-      if (Theme.of(context).platform == TargetPlatform.android) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text(S.of(context)?.cant_get_current_location ??
-                  "Can't get current location"),
-              content: Text(S
-                      .of(context)
-                      ?.please_make_sure_you_enable_gps_and_try_again ??
-                  'Please make sure you enable GPS and try again'),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text('Ok'),
-                  onPressed: () {
-                    final AndroidIntent intent = AndroidIntent(
-                        action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+  // // TODO: 9/12/2020 this is no longer needed, remove in the next release
+  // Future _checkGps() async {
+  //   if (!(await Geolocator.isLocationServiceEnabled())) {
+  //     if (Theme.of(context).platform == TargetPlatform.android) {
+  //       showDialog(
+  //         context: context,
+  //         barrierDismissible: false,
+  //         builder: (BuildContext context) {
+  //           return AlertDialog(
+  //             title: Text(S.of(context)?.cant_get_current_location ??
+  //                 "Can't get current location"),
+  //             content: Text(S
+  //                     .of(context)
+  //                     ?.please_make_sure_you_enable_gps_and_try_again ??
+  //                 'Please make sure you enable GPS and try again'),
+  //             actions: <Widget>[
+  //               TextButton(
+  //                 child: Text('Ok'),
+  //                 onPressed: () {
+  //                   final AndroidIntent intent = AndroidIntent(
+  //                       action: 'android.settings.LOCATION_SOURCE_SETTINGS');
 
-                    intent.launch();
-                    Navigator.of(context, rootNavigator: true).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      }
-    }
-  }
+  //                   intent.launch();
+  //                   Navigator.of(context, rootNavigator: true).pop();
+  //                 },
+  //               ),
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     }
+  //   }
+  // }
 }
 
 class _MapFabs extends StatelessWidget {
@@ -454,8 +464,7 @@ class _MapFabs extends StatelessWidget {
     required this.layersButtonEnabled,
     required this.onToggleMapTypePressed,
     required this.onMyLocationPressed,
-  })  : assert(onToggleMapTypePressed != null),
-        super(key: key);
+  }) : super(key: key);
 
   final bool? myLocationButtonEnabled;
   final bool? layersButtonEnabled;
@@ -467,16 +476,19 @@ class _MapFabs extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.topRight,
-      margin: const EdgeInsets.only(top: kToolbarHeight + 24, right: 8),
+      margin: const EdgeInsets.only(top: kToolbarHeight + 80, right: 8),
       child: Column(
         children: <Widget>[
           if (layersButtonEnabled!)
-            FloatingActionButton(
-              onPressed: onToggleMapTypePressed,
-              materialTapTargetSize: MaterialTapTargetSize.padded,
-              mini: true,
-              child: const Icon(Icons.layers),
-              heroTag: "layers",
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: FloatingActionButton(
+                onPressed: onToggleMapTypePressed,
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+                mini: true,
+                child: const Icon(Icons.layers),
+                heroTag: "layers",
+              ),
             ),
           if (myLocationButtonEnabled!)
             FloatingActionButton(
