@@ -282,7 +282,7 @@ class MapPickerState extends State<MapPicker> {
           '&key=${widget.apiKey}&language=${widget.language}';
 
       final response = jsonDecode((await http.get(Uri.parse(endpoint),
-              headers: await (LocationUtils.getAppHeaders())))
+              headers: await (LocationPickerUtils.getAppHeaders())))
           .body);
 
       print("BLB data $response");
