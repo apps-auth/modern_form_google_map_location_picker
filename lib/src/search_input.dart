@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:google_map_location_picker/generated/l10n.dart';
 
 /// Custom Search input field, showing the search and clear icons.
@@ -24,6 +25,7 @@ class SearchInput extends StatefulWidget {
 
 class SearchInputState extends State<SearchInput> {
   TextEditingController editController = TextEditingController();
+  FocusNode focus = FocusNode();
 
   Timer? debouncer;
 
@@ -33,12 +35,18 @@ class SearchInputState extends State<SearchInput> {
   void initState() {
     super.initState();
     editController.addListener(onSearchInputChange);
+    KeyboardVisibilityController().onChange.listen((bool visible) {
+      if (!visible) {
+        focus.unfocus();
+      }
+    });
   }
 
   @override
   void dispose() {
     editController.removeListener(onSearchInputChange);
     editController.dispose();
+    focus.dispose();
 
     super.dispose();
   }
@@ -76,6 +84,7 @@ class SearchInputState extends State<SearchInput> {
           SizedBox(width: 8),
           Expanded(
             child: TextField(
+              focusNode: focus,
               controller: editController,
               decoration: InputDecoration(
                 hintText: widget.hintText ??
@@ -83,6 +92,7 @@ class SearchInputState extends State<SearchInput> {
                     'Search place',
                 border: InputBorder.none,
               ),
+              textCapitalization: TextCapitalization.sentences,
               onChanged: (value) {
                 setState(() {
                   hasSearchEntry = value.isNotEmpty;
