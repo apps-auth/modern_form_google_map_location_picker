@@ -13,7 +13,7 @@ import java.math.BigInteger
 import java.security.MessageDigest
 
 
-class GoogleMapLocationPickerPlugin(act: Activity) : MethodCallHandler {
+class GoogleMapLocationPickerPlugin(act: Activity?) : MethodCallHandler {
     var activity: Activity = act
 
     companion object {
