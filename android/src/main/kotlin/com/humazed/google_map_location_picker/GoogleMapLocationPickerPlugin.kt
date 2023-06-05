@@ -14,7 +14,7 @@ import java.security.MessageDigest
 
 
 class GoogleMapLocationPickerPlugin(act: Activity?) : MethodCallHandler {
-    var activity: Activity? = act
+    var activity: Activity = act!!
 
     companion object {
         @JvmStatic
