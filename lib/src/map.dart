@@ -186,12 +186,12 @@ class MapPickerState extends State<MapPicker> {
               _lastMapPosition = position.target;
             },
             onCameraIdle: () async {
-              print("onCameraIdle#_lastMapPosition = $_lastMapPosition");
+              debugPrint("onCameraIdle#_lastMapPosition = $_lastMapPosition");
               LocationProvider.of(context, listen: false)
                   .setLastIdleLocation(_lastMapPosition);
             },
             onCameraMoveStarted: () {
-              print("onCameraMoveStarted#_lastMapPosition = $_lastMapPosition");
+              debugPrint("onCameraMoveStarted#_lastMapPosition = $_lastMapPosition");
             },
 //            onTap: (latLng) {
 //              clearOverlay();
@@ -283,7 +283,7 @@ class MapPickerState extends State<MapPicker> {
               headers: await (LocationPickerUtils.getAppHeaders())))
           .body);
 
-      print("BLB data $response");
+      debugPrint("BLB data: $response ==> $endpoint");
       _locationAdress = LocationAdress.fromMap(response['results'][0]);
 
       return {
@@ -291,7 +291,7 @@ class MapPickerState extends State<MapPicker> {
         "address": response['results'][0]['formatted_address']
       };
     } catch (e) {
-      print("BLB $e");
+      debugPrint("BLB $e");
     }
 
     return {"placeId": null, "address": null};

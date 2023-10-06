@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
 //                      resultCardAlignment: Alignment.bottomCenter,
                       desiredAccuracy: LocationAccuracy.best,
                     );
-                    print("result = $result");
+                    debugPrint("result = $result");
                     setState(() => _pickedLocation = result);
                   },
                   child: Text('Pick location'),

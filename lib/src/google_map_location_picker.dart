@@ -216,7 +216,7 @@ class LocationPickerState extends State<LocationPicker> {
         displayAutoCompleteSuggestions(suggestions);
       }
     }).catchError((error) {
-      print(error);
+      debugPrint(error);
     });
   }
 
@@ -246,7 +246,7 @@ class LocationPickerState extends State<LocationPicker> {
         moveToLocation(latLng);
       }
     }).catchError((error) {
-      print(error);
+      debugPrint(error);
     });
   }
 
@@ -354,7 +354,7 @@ class LocationPickerState extends State<LocationPicker> {
 
       if (responseJson['status'] == 'REQUEST_DENIED') {
         road = 'REQUEST DENIED = please see log for more details';
-        print(responseJson['error_message']);
+        debugPrint(responseJson['error_message']);
       } else {
         // road =
         //     responseJson['results'][0]['address_components'][0]['short_name'];

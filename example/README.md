@@ -47,7 +47,7 @@ class _MyAppState extends State<MyApp> {
                 RaisedButton(
                   onPressed: () async {
                     LocationResult result = await showLocationPicker(context, apiKey);
-                    print("result = $result");
+                    debugPrint("result = $result");
                     setState(() => _pickedLocation = result);
                   },
                   child: Text('Pick location'),
