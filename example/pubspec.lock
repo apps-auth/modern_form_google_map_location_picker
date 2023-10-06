@@ -187,7 +187,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "6.0.4"
+    version: "6.0.5"
   google_maps_flutter:
     dependency: transitive
     description:
