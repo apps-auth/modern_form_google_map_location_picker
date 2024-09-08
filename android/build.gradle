@@ -24,6 +24,10 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    if (project.android.hasProperty("namespace")) {
+        namespace 'com.humazed.google_map_location_picker'
+    }
+
     compileSdkVersion 28
 
     sourceSets {
