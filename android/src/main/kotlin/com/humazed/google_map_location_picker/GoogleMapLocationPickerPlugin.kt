@@ -12,7 +12,6 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.math.BigInteger
 import java.security.MessageDigest
 
-
 class GoogleMapLocationPickerPlugin(act: Activity?) : MethodCallHandler {
     var activity: Activity = act!!
 
@@ -26,27 +25,35 @@ class GoogleMapLocationPickerPlugin(act: Activity?) : MethodCallHandler {
 
     @UiThread
     override fun onMethodCall(call: MethodCall, result: Result) {
-        if (call.method == "getPlatformVersion") {
-            result.success("Android ${android.os.Build.VERSION.RELEASE}")
-        }
-        if (call.method == "getSigningCertSha1") {
-            try {
-                val info: PackageInfo = activity.packageManager.getPackageInfo(call.arguments<String?>(), PackageManager.GET_SIGNATURES)
-                for (signature in info.signatures) {
-                    val md: MessageDigest = MessageDigest.getInstance("SHA1")
-                    md.update(signature.toByteArray())
-
-                    val bytes: ByteArray = md.digest()
-                    val bigInteger = BigInteger(1, bytes)
-                    val hex: String = String.format("%0" + (bytes.size shl 1) + "x", bigInteger)
-
-                    result.success(hex)
-                }
-            } catch (e: Exception) {
-                result.error("ERROR", e.toString(), null)
+        when (call.method) {
+            "getPlatformVersion" -> {
+                result.success("Android ${android.os.Build.VERSION.RELEASE}")
             }
-        } else {
-            result.notImplemented()
+            "getSigningCertSha1" -> {
+                val packageName = call.argument<String>("packageName")
+                if (packageName != null) {
+                    try {
+                        val info: PackageInfo = activity.packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+                        for (signature in info.signatures) {
+                            val md: MessageDigest = MessageDigest.getInstance("SHA1")
+                            md.update(signature.toByteArray())
+
+                            val bytes: ByteArray = md.digest()
+                            val bigInteger = BigInteger(1, bytes)
+                            val hex: String = String.format("%0${bytes.size shl 1}x", bigInteger)
+
+                            result.success(hex)
+                        }
+                    } catch (e: Exception) {
+                        result.error("ERROR", e.toString(), null)
+                    }
+                } else {
+                    result.error("INVALID_ARGUMENT", "Package name must not be null", null)
+                }
+            }
+            else -> {
+                result.notImplemented()
+            }
         }
     }
 }
