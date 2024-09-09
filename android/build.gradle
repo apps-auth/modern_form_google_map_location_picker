@@ -36,13 +36,13 @@ android {
         namespace 'com.humazed.google_map_location_picker'
     }
 
-    compileSdkVersion 34
+    compileSdkVersion 30
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 17
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
