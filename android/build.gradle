@@ -2,13 +2,14 @@ group 'com.humazed.google_map_location_picker'
 version '1.0-SNAPSHOT'
 
 buildscript {
+    ext.kotlin_version = '1.9.0'
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.1'
+        classpath 'com.android.tools.build:gradle:7.0.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -16,7 +17,7 @@ buildscript {
 rootProject.allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
@@ -36,7 +37,7 @@ android {
         namespace 'com.humazed.google_map_location_picker'
     }
 
-    compileSdkVersion 30
+    compileSdkVersion 33
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
