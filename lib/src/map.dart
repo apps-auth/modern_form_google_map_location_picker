@@ -4,10 +4,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_map_location_picker/generated/l10n.dart';
-import 'package:google_map_location_picker/src/providers/location_provider.dart';
-import 'package:google_map_location_picker/src/utils/loading_builder.dart';
-import 'package:google_map_location_picker/src/utils/log.dart';
+import 'package:modern_form_google_map_location_picker/generated/l10n.dart';
+import 'package:modern_form_google_map_location_picker/src/providers/location_provider.dart';
+import 'package:modern_form_google_map_location_picker/src/utils/loading_builder.dart';
+import 'package:modern_form_google_map_location_picker/src/utils/log.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -191,7 +191,8 @@ class MapPickerState extends State<MapPicker> {
                   .setLastIdleLocation(_lastMapPosition);
             },
             onCameraMoveStarted: () {
-              debugPrint("onCameraMoveStarted#_lastMapPosition = $_lastMapPosition");
+              debugPrint(
+                  "onCameraMoveStarted#_lastMapPosition = $_lastMapPosition");
             },
 //            onTap: (latLng) {
 //              clearOverlay();

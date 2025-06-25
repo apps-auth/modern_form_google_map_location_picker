@@ -38,6 +38,27 @@ class S implements WidgetsLocalizations {
 
   @override
   String get reorderItemToStart => 'Move to the start';
+
+  @override
+  String get copyButtonLabel => 'Copy';
+
+  @override
+  String get cutButtonLabel => 'Cut';
+
+  @override
+  String get lookUpButtonLabel => 'Look Up';
+
+  @override
+  String get pasteButtonLabel => 'Paste Button';
+
+  @override
+  String get searchWebButtonLabel => 'Search';
+
+  @override
+  String get selectAllButtonLabel => 'Select All Button';
+
+  @override
+  String get shareButtonLabel => 'Shared Button';
 }
 
 class $ar extends S {
