@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_map_location_picker/generated/l10n.dart';
+import 'package:modern_form_google_map_location_picker/generated/l10n.dart';
 
 import 'log.dart';
 
