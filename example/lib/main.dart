@@ -20,7 +20,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-//      theme: ThemeData.dark(),
+      //      theme: ThemeData.dark(),
       title: 'location picker',
       localizationsDelegates: const [
         location_picker.S.delegate,
@@ -39,40 +39,40 @@ class _MyAppState extends State<MyApp> {
         Locale('ru', ''),
       ],
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('location picker'),
-        ),
-        body: Builder(builder: (context) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () async {
-                    LocationResult? result = await showLocationPicker(
-                      context,
-                      "API_KEY",
-                      initialCenter: LatLng(31.1975844, 29.9598339),
-//                      automaticallyAnimateToCurrentLocation: true,
-//                      mapStylePath: 'assets/mapStyle.json',
-                      myLocationButtonEnabled: true,
-                      // requiredGPS: true,
-                      layersButtonEnabled: true,
-                      // countries: ['AE', 'NG']
+        appBar: AppBar(title: const Text('location picker')),
+        body: Builder(
+          builder: (context) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: () async {
+                      LocationResult? result = await showLocationPicker(
+                        context,
+                        "API_KEY",
+                        initialCenter: LatLng(31.1975844, 29.9598339),
+                        //                      automaticallyAnimateToCurrentLocation: true,
+                        //                      mapStylePath: 'assets/mapStyle.json',
+                        myLocationButtonEnabled: true,
+                        // requiredGPS: true,
+                        layersButtonEnabled: true,
+                        // countries: ['AE', 'NG']
 
-//                      resultCardAlignment: Alignment.bottomCenter,
-                      desiredAccuracy: LocationAccuracy.best,
-                    );
-                    debugPrint("result = $result");
-                    setState(() => _pickedLocation = result);
-                  },
-                  child: Text('Pick location'),
-                ),
-                Text(_pickedLocation.toString()),
-              ],
-            ),
-          );
-        }),
+                        //                      resultCardAlignment: Alignment.bottomCenter,
+                        desiredAccuracy: LocationAccuracy.best,
+                      );
+                      debugPrint("result = $result");
+                      setState(() => _pickedLocation = result);
+                    },
+                    child: Text('Pick location'),
+                  ),
+                  Text(_pickedLocation.toString()),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
