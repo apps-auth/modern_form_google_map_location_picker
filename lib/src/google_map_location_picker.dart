@@ -5,12 +5,12 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:modern_form_google_map_location_picker/generated/l10n.dart';
-import 'package:modern_form_google_map_location_picker/src/map.dart';
-import 'package:modern_form_google_map_location_picker/src/providers/location_provider.dart';
-import 'package:modern_form_google_map_location_picker/src/rich_suggestion.dart';
-import 'package:modern_form_google_map_location_picker/src/search_input.dart';
-import 'package:modern_form_google_map_location_picker/src/utils/uuid.dart';
+import 'package:google_map_location_picker/generated/l10n.dart';
+import 'package:google_map_location_picker/src/map.dart';
+import 'package:google_map_location_picker/src/providers/location_provider.dart';
+import 'package:google_map_location_picker/src/rich_suggestion.dart';
+import 'package:google_map_location_picker/src/search_input.dart';
+import 'package:google_map_location_picker/src/utils/uuid.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -142,7 +142,7 @@ class LocationPickerState extends State<LocationPicker> {
                     S.of(context)?.finding_place ?? 'Finding place...',
                     style: TextStyle(fontSize: 16),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -170,13 +170,15 @@ class LocationPickerState extends State<LocationPicker> {
         ? "&components=country:${countries!.sublist(0, min(countries.length, 5)).join('|country:')}"
         : "";
 
-    var endpoint = "$autoCompleteUrl?" +
+    var endpoint =
+        "$autoCompleteUrl?" +
         "key=${widget.apiKey}&" +
         "input={$place}$regionParam&sessiontoken=$sessionToken&" +
         "language=${widget.language}";
 
     if (locationResult != null) {
-      endpoint += "&location=${locationResult!.latLng!.latitude}," +
+      endpoint +=
+          "&location=${locationResult!.latLng!.latitude}," +
           "${locationResult!.latLng!.longitude}";
     }
 
@@ -185,39 +187,42 @@ class LocationPickerState extends State<LocationPicker> {
     LocationPickerUtils.getAppHeaders()
         .then((headers) => http.get(Uri.parse(endpoint), headers: headers))
         .then((response) {
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
-        List<dynamic> predictions = data['predictions'];
+          if (response.statusCode == 200) {
+            Map<String, dynamic> data = jsonDecode(response.body);
+            List<dynamic> predictions = data['predictions'];
 
-        List<RichSuggestion> suggestions = [];
+            List<RichSuggestion> suggestions = [];
 
-        if (predictions.isEmpty) {
-          AutoCompleteItem aci = AutoCompleteItem();
-          aci.text = S.of(context)?.no_result_found ?? 'No result found';
-          aci.offset = 0;
-          aci.length = 0;
+            if (predictions.isEmpty) {
+              AutoCompleteItem aci = AutoCompleteItem();
+              aci.text = S.of(context)?.no_result_found ?? 'No result found';
+              aci.offset = 0;
+              aci.length = 0;
 
-          suggestions.add(RichSuggestion(aci, () {}));
-        } else {
-          for (dynamic t in predictions) {
-            AutoCompleteItem aci = AutoCompleteItem();
+              suggestions.add(RichSuggestion(aci, () {}));
+            } else {
+              for (dynamic t in predictions) {
+                AutoCompleteItem aci = AutoCompleteItem();
 
-            aci.id = t['place_id'];
-            aci.text = t['description'];
-            aci.offset = t['matched_substrings'][0]['offset'];
-            aci.length = t['matched_substrings'][0]['length'];
+                aci.id = t['place_id'];
+                aci.text = t['description'];
+                aci.offset = t['matched_substrings'][0]['offset'];
+                aci.length = t['matched_substrings'][0]['length'];
 
-            suggestions.add(RichSuggestion(aci, () {
-              decodeAndSelectPlace(aci.id);
-            }));
+                suggestions.add(
+                  RichSuggestion(aci, () {
+                    decodeAndSelectPlace(aci.id);
+                  }),
+                );
+              }
+            }
+
+            displayAutoCompleteSuggestions(suggestions);
           }
-        }
-
-        displayAutoCompleteSuggestions(suggestions);
-      }
-    }).catchError((error) {
-      debugPrint(error);
-    });
+        })
+        .catchError((error) {
+          debugPrint(error);
+        });
   }
 
   /// To navigate to the selected place from the autocomplete list to the map,
@@ -230,24 +235,27 @@ class LocationPickerState extends State<LocationPicker> {
         ? LocationPickerUtils.detailsWebUrl
         : LocationPickerUtils.detailsUrl;
 
-    final endpoint = "$detailsUrl?key=${widget.apiKey}" +
+    final endpoint =
+        "$detailsUrl?key=${widget.apiKey}" +
         "&placeid=$placeId" +
         '&language=${widget.language}';
 
     LocationPickerUtils.getAppHeaders()
         .then((headers) => http.get(Uri.parse(endpoint), headers: headers))
         .then((response) {
-      if (response.statusCode == 200) {
-        Map<String, dynamic> location =
-            jsonDecode(response.body)['result']['geometry']['location'];
+          if (response.statusCode == 200) {
+            Map<String, dynamic> location = jsonDecode(
+              response.body,
+            )['result']['geometry']['location'];
 
-        LatLng latLng = LatLng(location['lat'], location['lng']);
+            LatLng latLng = LatLng(location['lat'], location['lng']);
 
-        moveToLocation(latLng);
-      }
-    }).catchError((error) {
-      debugPrint(error);
-    });
+            moveToLocation(latLng);
+          }
+        })
+        .catchError((error) {
+          debugPrint(error);
+        });
   }
 
   /// Display autocomplete suggestions with the overlay.
@@ -264,12 +272,7 @@ class LocationPickerState extends State<LocationPicker> {
       builder: (context) => Positioned(
         width: size.width,
         top: appBarBox!.size.height,
-        child: Material(
-          elevation: 1,
-          child: Column(
-            children: suggestions,
-          ),
-        ),
+        child: Material(elevation: 1, child: Column(children: suggestions)),
       ),
     );
 
@@ -281,57 +284,61 @@ class LocationPickerState extends State<LocationPicker> {
   /// that the user selects from the nearby list (and expects to see that as a
   /// result, instead of road name). If no name is found from the nearby list,
   /// then the road name returned is used instead.
-//  String getLocationName() {
-//    if (locationResult == null) {
-//      return "Unnamed location";
-//    }
-//
-//    for (NearbyPlace np in nearbyPlaces) {
-//      if (np.latLng == locationResult.latLng) {
-//        locationResult.name = np.name;
-//        return np.name;
-//      }
-//    }
-//
-//    return "${locationResult.name}, ${locationResult.locality}";
-//  }
+  //  String getLocationName() {
+  //    if (locationResult == null) {
+  //      return "Unnamed location";
+  //    }
+  //
+  //    for (NearbyPlace np in nearbyPlaces) {
+  //      if (np.latLng == locationResult.latLng) {
+  //        locationResult.name = np.name;
+  //        return np.name;
+  //      }
+  //    }
+  //
+  //    return "${locationResult.name}, ${locationResult.locality}";
+  //  }
 
   /// Fetches and updates the nearby places to the provided lat,lng
   void getNearbyPlaces(LatLng latLng) {
-    LocationPickerUtils.getAppHeaders().then((headers) {
-      var endpoint =
-          "https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
+    LocationPickerUtils.getAppHeaders()
+        .then((headers) {
+          var endpoint =
+              "https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
               "key=${widget.apiKey}&" +
               "location=${latLng.latitude},${latLng.longitude}&radius=150" +
               "&language=${widget.language}";
 
-      return http.get(Uri.parse(endpoint), headers: headers);
-    }).then((response) {
-      if (response.statusCode == 200) {
-        nearbyPlaces.clear();
-        for (Map<String, dynamic> item
-            in jsonDecode(response.body)['results']) {
-          NearbyPlace nearbyPlace = NearbyPlace();
+          return http.get(Uri.parse(endpoint), headers: headers);
+        })
+        .then((response) {
+          if (response.statusCode == 200) {
+            nearbyPlaces.clear();
+            for (Map<String, dynamic> item in jsonDecode(
+              response.body,
+            )['results']) {
+              NearbyPlace nearbyPlace = NearbyPlace();
 
-          nearbyPlace.name = item['name'];
-          nearbyPlace.icon = item['icon'];
-          double latitude = item['geometry']['location']['lat'];
-          double longitude = item['geometry']['location']['lng'];
+              nearbyPlace.name = item['name'];
+              nearbyPlace.icon = item['icon'];
+              double latitude = item['geometry']['location']['lat'];
+              double longitude = item['geometry']['location']['lng'];
 
-          LatLng _latLng = LatLng(latitude, longitude);
+              LatLng _latLng = LatLng(latitude, longitude);
 
-          nearbyPlace.latLng = _latLng;
+              nearbyPlace.latLng = _latLng;
 
-          nearbyPlaces.add(nearbyPlace);
-        }
-      }
+              nearbyPlaces.add(nearbyPlace);
+            }
+          }
 
-      // to update the nearby places
-      setState(() {
-        // this is to require the result to show
-        hasSearchTerm = false;
-      });
-    }).catchError((error) {});
+          // to update the nearby places
+          setState(() {
+            // this is to require the result to show
+            hasSearchTerm = false;
+          });
+        })
+        .catchError((error) {});
   }
 
   /// This method gets the human readable name of the location. Mostly appears
@@ -339,11 +346,13 @@ class LocationPickerState extends State<LocationPicker> {
   Future reverseGeocodeLatLng(LatLng latLng) async {
     final endpoint =
         "https://maps.googleapis.com/maps/api/geocode/json?latlng=${latLng.latitude},${latLng.longitude}" +
-            "&key=${widget.apiKey}" +
-            "&language=${widget.language}";
+        "&key=${widget.apiKey}" +
+        "&language=${widget.language}";
 
-    final response = await http.get(Uri.parse(endpoint),
-        headers: await LocationPickerUtils.getAppHeaders());
+    final response = await http.get(
+      Uri.parse(endpoint),
+      headers: await LocationPickerUtils.getAppHeaders(),
+    );
 
     if (response.statusCode == 200) {
       Map<String, dynamic> responseJson = jsonDecode(response.body);
@@ -361,8 +370,8 @@ class LocationPickerState extends State<LocationPicker> {
         road = responseJson['results'][0]['address_components'][0]['long_name'];
       }
 
-//      String locality =
-//          responseJson['results'][0]['address_components'][1]['short_name'];
+      //      String locality =
+      //          responseJson['results'][0]['address_components'][1]['short_name'];
 
       setState(() {
         locationResult = LocationResult();
@@ -379,10 +388,7 @@ class LocationPickerState extends State<LocationPicker> {
     mapKey.currentState!.mapController.future.then((controller) {
       controller.animateCamera(
         CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: latLng,
-            zoom: 16,
-          ),
+          CameraPosition(target: latLng, zoom: 16),
         ),
       );
     });
@@ -401,48 +407,48 @@ class LocationPickerState extends State<LocationPicker> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => LocationProvider()),
-      ],
-      child: Builder(builder: (context) {
-        return Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            iconTheme: Theme.of(context).iconTheme,
-            elevation: 0,
-            backgroundColor: widget.appBarColor,
-            key: appBarKey,
-            title: SearchInput(
-              (input) => searchPlace(input),
-              key: searchInputKey,
-              boxDecoration: widget.searchBarBoxDecoration,
-              hintText: widget.hintText,
+      providers: [ChangeNotifierProvider(create: (_) => LocationProvider())],
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+              iconTheme: Theme.of(context).iconTheme,
+              elevation: 0,
+              backgroundColor: widget.appBarColor,
+              key: appBarKey,
+              title: SearchInput(
+                (input) => searchPlace(input),
+                key: searchInputKey,
+                boxDecoration: widget.searchBarBoxDecoration,
+                hintText: widget.hintText,
+              ),
             ),
-          ),
-          body: MapPicker(
-            widget.apiKey,
-            initialCenter: widget.initialCenter,
-            initialZoom: widget.initialZoom,
-            requiredGPS: widget.requiredGPS,
-            myLocationButtonEnabled: widget.myLocationButtonEnabled,
-            layersButtonEnabled: widget.layersButtonEnabled,
-            automaticallyAnimateToCurrentLocation:
-                widget.automaticallyAnimateToCurrentLocation,
-            mapStylePath: widget.mapStylePath,
-            appBarColor: widget.appBarColor,
-            pinColor: widget.pinColor,
-            searchBarBoxDecoration: widget.searchBarBoxDecoration,
-            hintText: widget.hintText,
-            resultCardConfirmIcon: widget.resultCardConfirmIcon,
-            resultCardAlignment: widget.resultCardAlignment,
-            resultCardDecoration: widget.resultCardDecoration,
-            resultCardPadding: widget.resultCardPadding,
-            key: mapKey,
-            language: widget.language,
-            desiredAccuracy: widget.desiredAccuracy,
-          ),
-        );
-      }),
+            body: MapPicker(
+              widget.apiKey,
+              initialCenter: widget.initialCenter,
+              initialZoom: widget.initialZoom,
+              requiredGPS: widget.requiredGPS,
+              myLocationButtonEnabled: widget.myLocationButtonEnabled,
+              layersButtonEnabled: widget.layersButtonEnabled,
+              automaticallyAnimateToCurrentLocation:
+                  widget.automaticallyAnimateToCurrentLocation,
+              mapStylePath: widget.mapStylePath,
+              appBarColor: widget.appBarColor,
+              pinColor: widget.pinColor,
+              searchBarBoxDecoration: widget.searchBarBoxDecoration,
+              hintText: widget.hintText,
+              resultCardConfirmIcon: widget.resultCardConfirmIcon,
+              resultCardAlignment: widget.resultCardAlignment,
+              resultCardDecoration: widget.resultCardDecoration,
+              resultCardPadding: widget.resultCardPadding,
+              key: mapKey,
+              language: widget.language,
+              desiredAccuracy: widget.desiredAccuracy,
+            ),
+          );
+        },
+      ),
     );
   }
 }

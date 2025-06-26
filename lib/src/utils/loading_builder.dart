@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:modern_form_google_map_location_picker/generated/l10n.dart';
+import 'package:google_map_location_picker/generated/l10n.dart';
 
 import 'log.dart';
 
@@ -16,8 +16,8 @@ class FutureLoadingBuilder<T> extends StatefulWidget {
     required this.builder,
     this.mutable = false,
     this.loadingIndicator,
-  })  : assert(builder != null),
-        super(key: key);
+  }) : assert(builder != null),
+       super(key: key);
 
   /// The asynchronous computation to which this builder is currently connected,
   /// possibly null.
