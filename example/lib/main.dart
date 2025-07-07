@@ -1,77 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_map_location_picker/generated/l10n.dart'
-    as location_picker;
-import 'package:google_map_location_picker/google_map_location_picker.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:async';
 
-import 'generated/i18n.dart';
+import 'package:flutter/services.dart';
+import 'package:google_map_location_picker/google_map_location_picker_platform_interface.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(const MyApp());
+}
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  LocationResult? _pickedLocation;
+    
+  String _platformVersion = 'Unknown';
+  final _googleMapLocationPickerPlugin = GoogleMapLocationPickerPlatform.instance.getPlatformVersion();
+
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initPlatformState() async {
+    String platformVersion;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    // We also handle the message potentially returning null.
+    try {
+      platformVersion =
+          await _googleMapLocationPickerPlugin ?? 'Unknown platform version';
+    } on PlatformException {
+      platformVersion = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _platformVersion = platformVersion;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      //      theme: ThemeData.dark(),
-      title: 'location picker',
-      localizationsDelegates: const [
-        location_picker.S.delegate,
-        S.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const <Locale>[
-        Locale('en', ''),
-        Locale('ar', ''),
-        Locale('pt', ''),
-        Locale('tr', ''),
-        Locale('es', ''),
-        Locale('it', ''),
-        Locale('ru', ''),
-      ],
       home: Scaffold(
-        appBar: AppBar(title: const Text('location picker')),
-        body: Builder(
-          builder: (context) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  ElevatedButton(
-                    onPressed: () async {
-                      LocationResult? result = await showLocationPicker(
-                        context,
-                        "API_KEY",
-                        initialCenter: LatLng(31.1975844, 29.9598339),
-                        //                      automaticallyAnimateToCurrentLocation: true,
-                        //                      mapStylePath: 'assets/mapStyle.json',
-                        myLocationButtonEnabled: true,
-                        // requiredGPS: true,
-                        layersButtonEnabled: true,
-                        // countries: ['AE', 'NG']
-
-                        //                      resultCardAlignment: Alignment.bottomCenter,
-                        desiredAccuracy: LocationAccuracy.best,
-                      );
-                      debugPrint("result = $result");
-                      setState(() => _pickedLocation = result);
-                    },
-                    child: Text('Pick location'),
-                  ),
-                  Text(_pickedLocation.toString()),
-                ],
-              ),
-            );
-          },
+        appBar: AppBar(
+          title: const Text('Plugin example app'),
+        ),
+        body: Center(
+          child: Text('Running on: $_platformVersion\n'),
         ),
       ),
     );
