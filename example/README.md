@@ -1,64 +1,16 @@
-# example/dio.dart
+# google_map_location_picker_example
 
-```dart
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_map_location_picker/generated/l10n.dart'
-    as location_picker;
-import 'package:google_map_location_picker/google_map_location_picker.dart';
-import 'package:google_map_location_picker_example/keys.dart';
+Demonstrates how to use the google_map_location_picker plugin.
 
-import 'generated/i18n.dart';
+## Getting Started
 
-void main() => runApp(MyApp());
+This project is a starting point for a Flutter application.
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
+A few resources to get you started if this is your first Flutter project:
 
-class _MyAppState extends State<MyApp> {
-  LocationResult _pickedLocation;
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'location picker',
-      localizationsDelegates: const [
-        location_picker.S.delegate,
-        S.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const <Locale>[
-        Locale('en', ''),
-        Locale('ar', ''),
-      ],
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('location picker'),
-        ),
-        body: Builder(builder: (context) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                RaisedButton(
-                  onPressed: () async {
-                    LocationResult result = await showLocationPicker(context, apiKey);
-                    debugPrint("result = $result");
-                    setState(() => _pickedLocation = result);
-                  },
-                  child: Text('Pick location'),
-                ),
-                Text(_pickedLocation.toString()),
-              ],
-            ),
-          );
-        }),
-      ),
-    );
-  }
-}
-```
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
