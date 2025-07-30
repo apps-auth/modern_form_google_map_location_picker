@@ -42,6 +42,7 @@ class LocationPicker extends StatefulWidget {
     this.countries,
     this.language,
     this.desiredAccuracy,
+    this.searchInputEnabled,
   });
 
   final String apiKey;
@@ -54,6 +55,7 @@ class LocationPicker extends StatefulWidget {
   final bool? myLocationButtonEnabled;
   final bool? layersButtonEnabled;
   final bool? automaticallyAnimateToCurrentLocation;
+  final bool? searchInputEnabled;
 
   final String? mapStylePath;
 
@@ -412,12 +414,15 @@ class LocationPickerState extends State<LocationPicker> {
             elevation: 0,
             backgroundColor: widget.appBarColor,
             key: appBarKey,
-            title: SearchInput(
-              (input) => searchPlace(input),
-              key: searchInputKey,
-              boxDecoration: widget.searchBarBoxDecoration,
-              hintText: widget.hintText,
-            ),
+            title: widget.searchInputEnabled == null ||
+                    widget.searchInputEnabled == true
+                ? SearchInput(
+                    (input) => searchPlace(input),
+                    key: searchInputKey,
+                    boxDecoration: widget.searchBarBoxDecoration,
+                    hintText: widget.hintText,
+                  )
+                : null,
           ),
           body: MapPicker(
             widget.apiKey,
