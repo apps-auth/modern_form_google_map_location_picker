@@ -483,6 +483,7 @@ Future<LocationResult?> showLocationPicker(
   String language = 'en',
   LocationAccuracy desiredAccuracy = LocationAccuracy.best,
   Color? pinColor,
+  bool? searchInputEnabled,
 }) async {
   final results = await Navigator.of(context).push(
     MaterialPageRoute<dynamic>(
@@ -509,6 +510,7 @@ Future<LocationResult?> showLocationPicker(
           language: language,
           desiredAccuracy: desiredAccuracy,
           pinColor: pinColor,
+          searchInputEnabled: searchInputEnabled,
         );
       },
     ),
