@@ -140,15 +140,18 @@ class MapPickerState extends State<MapPicker> {
 
     if (_currentPosition != null && dialogOpen != null) Navigator.of(context, rootNavigator: true).pop();
 
-    return Scaffold(
-      body: Builder(
-        builder: (context) {
-          if (_currentPosition == null && widget.automaticallyAnimateToCurrentLocation! && widget.requiredGPS!) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return SafeArea(
+      bottom: true,
+      child: Scaffold(
+        body: Builder(
+          builder: (context) {
+            if (_currentPosition == null && widget.automaticallyAnimateToCurrentLocation! && widget.requiredGPS!) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          return buildMap();
-        },
+            return buildMap();
+          },
+        ),
       ),
     );
   }

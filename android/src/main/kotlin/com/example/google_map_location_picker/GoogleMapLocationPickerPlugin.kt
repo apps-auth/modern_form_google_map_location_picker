@@ -1,4 +1,4 @@
-package com.humazed.google_map_location_picker
+package com.example.google_map_location_picker
 
 import android.app.Activity
 import android.content.Context
@@ -13,7 +13,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.math.BigInteger
 import java.security.MessageDigest
 
@@ -48,18 +47,6 @@ class GoogleMapLocationPickerPlugin: FlutterPlugin, MethodCallHandler, ActivityA
         activity = null
     }
 
-    // Manter compatibilidade com a API antiga
-    companion object {
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val channel = MethodChannel(registrar.messenger(), "google_map_location_picker")
-            val plugin = GoogleMapLocationPickerPlugin()
-            plugin.activity = registrar.activity()
-            plugin.context = registrar.context()
-            channel.setMethodCallHandler(plugin)
-        }
-    }
-
     @UiThread
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
@@ -77,16 +64,21 @@ class GoogleMapLocationPickerPlugin: FlutterPlugin, MethodCallHandler, ActivityA
                     
                     try {
                         val info: PackageInfo = currentActivity.packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
-                        for (signature in info.signatures) {
-                            val md: MessageDigest = MessageDigest.getInstance("SHA1")
-                            md.update(signature.toByteArray())
+                        val signatures = info.signatures
+                        if (signatures != null && signatures.isNotEmpty()) {
+                            for (signature in signatures) {
+                                val md: MessageDigest = MessageDigest.getInstance("SHA1")
+                                md.update(signature.toByteArray())
 
-                            val bytes: ByteArray = md.digest()
-                            val bigInteger = BigInteger(1, bytes)
-                            val hex: String = String.format("%0${bytes.size shl 1}x", bigInteger)
+                                val bytes: ByteArray = md.digest()
+                                val bigInteger = BigInteger(1, bytes)
+                                val hex: String = String.format("%0${bytes.size shl 1}x", bigInteger)
 
-                            result.success(hex)
-                            return
+                                result.success(hex)
+                                return
+                            }
+                        } else {
+                            result.error("NO_SIGNATURES", "No signatures found for package", null)
                         }
                     } catch (e: Exception) {
                         result.error("ERROR", e.toString(), null)
